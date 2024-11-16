@@ -1,0 +1,26 @@
+ERROR:root:We tried to divide between 0
+Traceback (most recent call last):
+  File "/home/schronding/repos/programacion_orientada_a_objetos/03-09-2024/exceptions.py", line 9, in <module>
+    premedatio_malorum = dividend / divisor
+                         ~~~~~~~~~^~~~~~~~~
+ZeroDivisionError: division by zero
+DEBUG:root:Try to change the divisor (0) variable
+Stack (most recent call last):
+  File "/home/schronding/repos/programacion_orientada_a_objetos/03-09-2024/exceptions.py", line 12, in <module>
+    logging.debug(f"Try to change the divisor ({divisor}) variable", stack_info = True, stacklevel = 0)
+  File "/usr/lib/python3.11/logging/__init__.py", line 2151, in debug
+    root.debug(msg, *args, **kwargs)
+  File "/usr/lib/python3.11/logging/__init__.py", line 1477, in debug
+    self._log(DEBUG, msg, args, **kwargs)
+  File "/usr/lib/python3.11/logging/__init__.py", line 1622, in _log
+    fn, lno, func, sinfo = self.findCaller(stack_info, stacklevel)
+  File "/usr/lib/python3.11/logging/__init__.py", line 1589, in findCaller
+    traceback.print_stack(f, file=sio)
+INFO:root:Did you know the Mayans created the zero?
+ERROR:root:We haven't found where the soul is located yet
+Traceback (most recent call last):
+  File "/home/schronding/repos/programacion_orientada_a_objetos/03-09-2024/exceptions.py", line 18, in <module>
+    where_is_the_soul = location_of["soul"]
+                        ~~~~~~~~~~~^^^^^^^^
+KeyError: 'soul'
+CRITICAL:root:Don't succumb into nihilism yet!
