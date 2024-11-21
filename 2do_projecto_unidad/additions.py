@@ -4,105 +4,7 @@
 # Basic pygame setup
 import pygame
 pygame.init()
-WIDTH = 1000
-HEIGHT = 900
-screen = pygame.display.set_mode([WIDTH, HEIGHT])
-pygame.display.set_caption('Two-Player Pygame Chess!')
-# These are the classic variables that we need to use for every game in 'pygame'. The 'WIDTH' and 'HEIGHT' correspond to the size of the screen that will pop up. 
-# The 'screen' variable is the place where we're going to draw everything that happens during the game. 
-
-SMALL_FONT = pygame.font.Font('freesansbold.ttf', 20)
-MEDIUM_FONT = pygame.font.Font('freesansbold.ttf', 40)
-BIG_FONT = pygame.font.Font('freesansbold.ttf', 50)
-# Even as the font is the same we put three different sizes. Why? Most probably for aesthetic purposes
-
-timer = pygame.time.Clock()
-fps = 60
-
-# game variables and images
-white_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
-                'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
-
-white_locations = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0),
-                   (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1)]
-
-black_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
-                'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
-
-black_locations = [(0, 7), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (7, 7),
-                   (0, 6), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6)]
-
-captured_pieces_white = []
-captured_pieces_black = []
-# 0 - whites turn no selection: 1-whites turn piece selected: 2- black turn no selection, 3 - black turn piece selected
-turn_step = 0
-selection = 100
-# The 'selection' variable appears to just be an arbitrary number that will change depending on what we select.
-valid_moves = []
-
-# load in game piece images (queen, king, rook, bishop, knight, pawn) x 2
-black_queen = pygame.image.load("images/black_queen.png")
-black_queen = pygame.transform.scale(black_queen, (80, 80))
-black_queen_small = pygame.transform.scale(black_queen, (45, 45))
-# While it doesn't appear as an option to tab, to link a file to the method '.load()' I just need to put the name of the folder next to a ...
-# ... slash (/) and the file name and extension. 
-
-black_king = pygame.image.load("images/black_king.png")
-black_king = pygame.transform.scale(black_king, (80, 80))
-black_king_small = pygame.transform.scale(black_king, (45, 45))
-
-black_rook = pygame.image.load("images/black_rook.png")
-black_rook = pygame.transform.scale(black_rook, (80, 80))
-black_rook_small = pygame.transform.scale(black_rook, (45, 45))
-
-black_bishop = pygame.image.load("images/black_bishop.png")
-black_bishop = pygame.transform.scale(black_bishop, (80, 80))
-black_bishop_small = pygame.transform.scale(black_bishop, (45, 45))
-
-black_knight = pygame.image.load("images/black_knight.png")
-black_knight = pygame.transform.scale(black_knight, (80, 80))
-black_knight_small = pygame.transform.scale(black_knight, (45, 45))
-
-black_pawn = pygame.image.load("images/black_pawn.png")
-black_pawn = pygame.transform.scale(black_pawn, (65, 65))
-black_pawn_small = pygame.transform.scale(black_pawn, (45, 45))
-
-white_queen = pygame.image.load("images/white_queen.png")
-white_queen = pygame.transform.scale(white_queen, (80, 80))
-white_queen_small = pygame.transform.scale(white_queen, (45, 45))
-
-white_king = pygame.image.load("images/white_king.png")
-white_king = pygame.transform.scale(white_king, (80, 80))
-white_king_small = pygame.transform.scale(white_king, (45, 45))
-
-white_rook = pygame.image.load("images/white_rook.png")
-white_rook = pygame.transform.scale(white_rook, (80, 80))
-white_rook_small = pygame.transform.scale(white_rook, (45, 45))
-
-white_bishop = pygame.image.load("images/white_bishop.png")
-white_bishop = pygame.transform.scale(white_bishop, (80, 80))
-white_bishop_small = pygame.transform.scale(white_bishop, (45, 45))
-
-white_knight = pygame.image.load("images/white_knight.png")
-white_knight = pygame.transform.scale(white_knight, (80, 80))
-white_knight_small = pygame.transform.scale(white_knight, (45, 45))
-
-white_pawn = pygame.image.load("images/white_pawn.png")
-white_pawn = pygame.transform.scale(white_pawn, (65, 65))
-white_pawn_small = pygame.transform.scale(white_pawn, (45, 45))
-
-white_images = [white_pawn, white_queen, white_king, white_knight, white_rook, white_bishop]
-small_white_images = [white_pawn_small, white_queen_small, white_king_small, white_knight_small,
-                      white_rook_small, white_bishop_small]
-black_images = [black_pawn, black_queen, black_king, black_knight, black_rook, black_bishop]
-small_black_images = [black_pawn_small, black_queen_small, black_king_small, black_knight_small,
-                      black_rook_small, black_bishop_small]
-piece_list = ['pawn', 'queen', 'king', 'knight', 'rook', 'bishop']
-
-# check variables/ flashing counter
-counter = 0
-winner = ''
-game_over = False
+from constants import *
 
 # draw main game board
 def draw_board():
@@ -290,25 +192,42 @@ def check_pawn(position, color):
                 (position[0], position[1] + 1) not in black_locations and position[1] < 7:
             # For what I see this corresponds to what are considered "legal moves"
             moves_list.append((position[0], position[1] + 1))
-        if (position[0], position[1] + 2) not in white_locations and \
-                (position[0], position[1] + 2) not in black_locations and position[1] == 1:
-            moves_list.append((position[0], position[1] + 2))
+            if (position[0], position[1] + 2) not in white_locations and \
+                    (position[0], position[1] + 2) not in black_locations and position[1] == 1:
+                moves_list.append((position[0], position[1] + 2))
+            # This identation is necessary because while the first 'if' checks that the position in front of the pawn is available, this second one does ...
+            # ... it too, but it should do it only after the first one has been checked. Why? Because knights are able to "jump" pieces, so if this second ...
+            # ... 'if' and 'moves_list.append()' are not indented, a pawn can effectively jump over a knight with its double inicial step. 
         if (position[0] + 1, position[1] + 1) in black_locations:
             moves_list.append((position[0] + 1, position[1] + 1))
         if (position[0] - 1, position[1] + 1) in black_locations:
             moves_list.append((position[0] - 1, position[1] + 1))
+        # These last two 'if' statements check if it is possible for a white piece to capture a black one diagonally.
+        if (position[0] + 1, position[1] + 1) == black_ep:
+            moves_list.append((position[0] + 1, position[1] + 1))
+        if (position[0] - 1, position[1] + 1) == black_ep:
+            moves_list.append((position[0] - 1, position[1] + 1)) 
+        # Why 2 'if' statements? Because any pawn has at most two diagonals to attack, so we need 2 'if' statements for normal capture, and 2 'if' statements ...
+        # ... for "en passant" capture. 
     else:
         if (position[0], position[1] - 1) not in white_locations and \
                 (position[0], position[1] - 1) not in black_locations and position[1] > 0:
             moves_list.append((position[0], position[1] - 1))
-        if (position[0], position[1] - 2) not in white_locations and \
-                (position[0], position[1] - 2) not in black_locations and position[1] == 6:
-            moves_list.append((position[0], position[1] - 2))
+            if (position[0], position[1] - 2) not in white_locations and \
+                    (position[0], position[1] - 2) not in black_locations and position[1] == 6:
+                moves_list.append((position[0], position[1] - 2))
+            # This follows the same logic that the white pieces, so we should indent this 'if' and 'moves_list.append()' too. 
         if (position[0] + 1, position[1] - 1) in white_locations:
             moves_list.append((position[0] + 1, position[1] - 1))
         if (position[0] - 1, position[1] - 1) in white_locations:
             moves_list.append((position[0] - 1, position[1] - 1))
+        # The two 'if' statements below check for "en passant" capture. 
+        if (position[0] + 1, position[1] - 1) == white_ep:
+            moves_list.append((position[0] + 1, position[1] - 1))
+        if (position[0] - 1, position[1] - 1) == white_ep:
+            moves_list.append((position[0] - 1, position[1] - 1)) 
     return moves_list
+
 
 
 # check valid knight moves
@@ -388,7 +307,32 @@ def draw_game_over():
     screen.blit(SMALL_FONT.render(f'{winner} won the game!', True, 'white'), (210, 210))
     screen.blit(SMALL_FONT.render(f'Press ENTER to Restart!', True, 'white'), (210, 240))
 
-
+# Check if en passant is an available move
+def check_ep(old_coords, new_coords):
+    if turn_step <= 1:
+        index = white_locations.index(old_coords)
+        ep_coords = (new_coords[0], new_coords[1] - 1)
+        # The minus is because the way we draw the game, with the white pieces on the upper side of the screen, requires that the white pieces go down. 
+        piece = white_pieces[index]
+    else:
+        index = black_locations.index(old_coords)
+        ep_coords = (new_coords[0], new_coords[1] + 1)
+        # Precisely the opposite of what happens to the black pieces, that is why we have a plus (+) sign. 
+        piece = black_pieces[index] 
+    if piece == 'pawn' and abs(old_coords[1] - new_coords[1]) > 1:
+        # The absolute value is to avoid the need to check for both the black and white pieces. Basically what this tells us is that if an enemy pawn moved ...
+        # ... to pass an ally pawn, our ally pawn has the opportunity to capture it. That is why we want the value to be above 1, as if it was just one ...
+        # ... we would already had the standard capture to get it out of the way. 
+        pass
+    else: 
+        ep_coords = (100, 100)
+        # As a means to make them useless; there isn't any way for (100, 100) to occur, so the program won't crash or create any unexpected behavior.
+        # But why do we make them useless? Because this function just cares of calculating a proper "en passant" possibility, so if the 'if' statement above ...
+        # ... is true, then we just go at the end of the function to return the 'ep_coords', which is one square behind the captured pawn. 
+    return ep_coords
+    # As this function works with what were the old coordinates of any given piece, by definition we also check that the "en passant" capture is only available ...
+    # ... for one turn only. 
+    
 # main game loop
 black_options = check_options(black_pieces, black_locations, 'black')
 white_options = check_options(white_pieces, white_locations, 'white')
@@ -424,6 +368,7 @@ while run:
                     if turn_step == 0:
                         turn_step = 1
                 if click_coords in valid_moves and selection != 100:
+                    white_ep = check_ep(white_locations[selection], click_coords)
                     white_locations[selection] = click_coords
                     if click_coords in black_locations:
                         black_piece = black_locations.index(click_coords)
@@ -432,6 +377,13 @@ while run:
                             winner = 'white'
                         black_pieces.pop(black_piece)
                         black_locations.pop(black_piece)
+                    # To capture (pop) the pawn that has been captured "en passant", and put him on the captured pieces.
+                    if click_coords == black_ep:
+                        black_piece = black_locations.index((black_ep[0], black_ep[1] - 1))
+                        captured_pieces_white.append(black_pieces[black_piece])
+                        black_pieces.pop(black_piece)
+                        black_locations.pop(black_piece)
+
                     black_options = check_options(black_pieces, black_locations, 'black')
                     white_options = check_options(white_pieces, white_locations, 'white')
                     turn_step = 2
@@ -445,6 +397,7 @@ while run:
                     if turn_step == 2:
                         turn_step = 3
                 if click_coords in valid_moves and selection != 100:
+                    black_ep = check_ep(black_locations[selection], click_coords)
                     black_locations[selection] = click_coords
                     if click_coords in white_locations:
                         white_piece = white_locations.index(click_coords)
@@ -453,6 +406,13 @@ while run:
                             winner = 'black'
                         white_pieces.pop(white_piece)
                         white_locations.pop(white_piece)
+                    # En passant capture.
+                    if click_coords == white_ep:
+                        white_piece = white_locations.index(white_ep[0], white_ep[1] + 1)
+                        captured_pieces_black.append(white_pieces[white_piece])
+                        white_pieces.pop(white_piece)
+                        white_locations.pop(white_piece)
+
                     black_options = check_options(black_pieces, black_locations, 'black')
                     white_options = check_options(white_pieces, white_locations, 'white')
                     turn_step = 0
@@ -482,6 +442,8 @@ while run:
     if winner != '':
         game_over = True
         draw_game_over()
-
+    # print(black_ep, white_ep)
+    # This print statement allows us to see what is the location a pawn would travel if he had the option to capture "en passant". Recall that in the board ...
+    # ... we start from (0,0) in the leftmost square and then move it to 7 in both directions, being the first integer the columns and the second the rows. 
     pygame.display.flip()
 pygame.quit()
