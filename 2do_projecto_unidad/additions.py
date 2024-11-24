@@ -25,6 +25,12 @@ def draw_board():
             pygame.draw.line(screen, 'black', (0, 100 * i), (800, 100 * i), 2)
             pygame.draw.line(screen, 'black', (100 * i, 0), (100 * i, 800), 2)
         screen.blit(MEDIUM_FONT.render('FORFEIT', True, 'black'), (810, 830))
+        if white_promote or black_promote:
+            pygame.draw.rect(screen, 'gray', [0, 800, WIDTH - 200, 100])
+            pygame.draw.rect(screen, 'gold', [0, 800, WIDTH - 200, 100], 5)
+            # The reason why we add the '- 200' is so we don't erase the "FORFEIT" button. 
+            screen.blit(BIG_FONT.render('Select Piece to Promote Pawn', True, 'black'), (20, 820))
+
 
 # draw pieces onto board
 def draw_pieces():
@@ -333,6 +339,71 @@ def check_ep(old_coords, new_coords):
     # As this function works with what were the old coordinates of any given piece, by definition we also check that the "en passant" capture is only available ...
     # ... for one turn only. 
     
+def check_promotion():
+    pawn_indexes = []
+    # A list that contains all the locations in which the pawns are. 
+    white_promotion = False
+    black_promotion = False
+    promote_index = 100
+    # A dummy value
+    for i in range(len(white_pieces)):
+        if white_pieces[i] == "pawn":
+            pawn_indexes.append(i)
+    for j in range(len(pawn_indexes)):
+        if white_locations[pawn_indexes[j]][1] == 7:
+        # The 7 represents that we are at the last row of the game board (as we start with index 0), which means that our white pawn is elligible to promote. 
+            white_promotion = True
+            promote_index = pawn_indexes[j]
+            # By passing the index 'j' we ensure that the pawn that is being promoted is the correct one. 
+    pawn_indexes = []
+    for i in range(len(black_pieces)):
+        if black_pieces[i] == "pawn":
+            pawn_indexes.append(i)
+    for j in range(len(pawn_indexes)):
+        if black_locations[pawn_indexes[j]][1] == 0:
+        # Note how in the black pieces we use the value of 0, as it represents the "top" of the board, from the black player's perspective. 
+            black_promotion = True
+            promote_index = pawn_indexes[j]
+    return white_promotion, black_promotion, promote_index
+
+def draw_promotion():
+    pygame.draw.rect(screen, 'dark gray', [800, 0, 200, 420])
+    if white_promote:
+        color = 'white'
+        for i in range(len(white_promotions)):
+            piece = white_promotions[i]
+            index = piece_list.index(piece)
+            screen.blit(white_images[index], (860, 5 + 100 * i))
+            # The multiplication is just to space the pieces from one another, while the '+ 5' is just so the first piece doesn't touch the upper border. 
+            # As there are 4 "power pieces" to which the pawn can be promoted into, 420 pixels is more than enough space to contain all of them. 
+    elif black_promote:
+        color = 'black'
+        for i in range(len(black_promotions)):
+            piece = black_promotions[i]
+            index = piece_list.index(piece)
+            screen.blit(black_images[index], (860, 5 + 100 * i))
+    pygame.draw.rect(screen, color, [800, 0, 200, 420], 8)
+
+def check_promo_select():
+    mouse_pos = pygame.mouse.get_pos()
+    left_click = pygame.mouse.get_pressed()[0]
+    x_pos = mouse_pos[0] // 100
+    y_pos = mouse_pos[1] // 100
+    # The reason why we use the '// 100' is because each of our squares is 100 width, and 100 height, so when we click over any of them we want to select ...
+    # ... what is being shown in the entire 'quadrant' of that click.
+    if white_promote and left_click and x_pos > 7 and y_pos < 4:
+    # The reason why we're using 'x_pos > 7' is because as our table board has 8 squares as width, when we go further than 7 that means we are touching the ... 
+    # ... right menu, actually selecting the piece to promote. 
+    # The 'y_pos < 4' has the same idea, as the menu of the possible pieces to promote is just 4 pieces, that means that if we go beyond it we aren't ... 
+    # ... actually clicking the menu with the piece we want to select. 
+        white_pieces[promo_index] = white_promotions[y_pos]
+        # As the images are being displayed in the same order that our list contains the pieces, when we select any of them (that is what 'y_pos' is used ... 
+        # ... for) we are actually giving an index for the 'white_promotions' list with the piece we want to promote into. 
+    elif black_promote and left_click and x_pos > 7 and y_pos < 4:
+    # As both the promotions are being drawn on the same place, we don't really need to change the 'x_pos > 7' or 'y_pos < 4' statements. 
+        black_pieces[promo_index] = black_promotions[y_pos]
+
+
 # main game loop
 black_options = check_options(black_pieces, black_locations, 'black')
 white_options = check_options(white_pieces, white_locations, 'white')
@@ -349,6 +420,13 @@ while run:
     draw_pieces()
     draw_captured()
     draw_check()
+    if not game_over:
+        white_promote, black_promote, promo_index = check_promotion()
+        # Just slightly different names from what the 'check_promotion' returns. 
+        # Notice how they're ordered in exactly the same way that in the 'return' statement of the 'check_promotion()' function.
+        if white_promote or black_promote:
+            draw_promotion()
+            check_promo_select()
     if selection != 100:
         valid_moves = check_valid_moves()
         draw_valid(valid_moves)
@@ -408,8 +486,10 @@ while run:
                         white_locations.pop(white_piece)
                     # En passant capture.
                     if click_coords == white_ep:
-                        white_piece = white_locations.index(white_ep[0], white_ep[1] + 1)
+                        white_piece = white_locations.index((white_ep[0], white_ep[1] + 1))
                         captured_pieces_black.append(white_pieces[white_piece])
+                        # It is important to note that the captured piece goes on the 'captured_pieces' but with the 'black' suffix, which can be a bit ...
+                        # ... confusing considerating that every other adjective in this 'if' statement block is 'white'. 
                         white_pieces.pop(white_piece)
                         white_locations.pop(white_piece)
 
