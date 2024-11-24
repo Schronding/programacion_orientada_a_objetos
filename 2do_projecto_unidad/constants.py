@@ -98,6 +98,8 @@ small_white_images = [white_pawn_small, white_queen_small, white_king_small, whi
                       white_rook_small, white_bishop_small]
 black_images = [black_pawn, black_queen, black_king, black_knight, black_rook, black_bishop]
 black_promotions = ['bishop', 'knight', 'rook', 'queen']
+black_moved = [False, False, False, False, False, False, False, False,
+               False, False, False, False, False, False, False, False,]
 
 small_black_images = [black_pawn_small, black_queen_small, black_king_small, black_knight_small,
                       black_rook_small, black_bishop_small]
