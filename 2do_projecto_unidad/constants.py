@@ -116,3 +116,5 @@ white_promote = False
 black_promote = False
 promo_index = 100
 # Using our favorite dummy value
+check = False
+castling_moves = []
