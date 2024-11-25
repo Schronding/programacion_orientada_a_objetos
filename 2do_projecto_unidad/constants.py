@@ -9,9 +9,9 @@ pygame.display.set_caption('Two-Player Pygame Chess!')
 # These are the classic variables that we need to use for every game in 'pygame'. The 'WIDTH' and 'HEIGHT' correspond to the size of the screen that will pop up. 
 # The 'screen' variable is the place where we're going to draw everything that happens during the game. 
 
-SMALL_FONT = pygame.font.Font('freesansbold.ttf', 20)
-MEDIUM_FONT = pygame.font.Font('freesansbold.ttf', 40)
-BIG_FONT = pygame.font.Font('freesansbold.ttf', 50)
+font = pygame.font.Font('freesansbold.ttf', 20)
+medium_font = pygame.font.Font('freesansbold.ttf', 40)
+big_font = pygame.font.Font('freesansbold.ttf', 50)
 # Even as the font is the same we put three different sizes. Why? Most probably for aesthetic purposes
 
 timer = pygame.time.Clock()

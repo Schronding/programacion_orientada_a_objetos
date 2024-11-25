@@ -20,16 +20,16 @@ def draw_board():
         pygame.draw.rect(screen, 'gold', [800, 0, 200, HEIGHT], 5)
         status_text = ['White: Select a Piece to Move!', 'White: Select a Destination!',
                        'Black: Select a Piece to Move!', 'Black: Select a Destination!']
-        screen.blit(BIG_FONT.render(status_text[turn_step], True, 'black'), (20, 820))
+        screen.blit(big_font.render(status_text[turn_step], True, 'black'), (20, 820))
         for i in range(9):
             pygame.draw.line(screen, 'black', (0, 100 * i), (800, 100 * i), 2)
             pygame.draw.line(screen, 'black', (100 * i, 0), (100 * i, 800), 2)
-        screen.blit(MEDIUM_FONT.render('FORFEIT', True, 'black'), (810, 830))
+        screen.blit(medium_font.render('FORFEIT', True, 'black'), (810, 830))
         if white_promote or black_promote:
             pygame.draw.rect(screen, 'gray', [0, 800, WIDTH - 200, 100])
             pygame.draw.rect(screen, 'gold', [0, 800, WIDTH - 200, 100], 5)
             # The reason why we add the '- 200' is so we don't erase the "FORFEIT" button. 
-            screen.blit(BIG_FONT.render('Select Piece to Promote Pawn', True, 'black'), (20, 820))
+            screen.blit(big_font.render('Select Piece to Promote Pawn', True, 'black'), (20, 820))
 
 
 # draw pieces onto board
@@ -317,8 +317,8 @@ def draw_check():
 
 def draw_game_over():
     pygame.draw.rect(screen, 'black', [200, 200, 400, 70])
-    screen.blit(SMALL_FONT.render(f'{winner} won the game!', True, 'white'), (210, 210))
-    screen.blit(SMALL_FONT.render(f'Press ENTER to Restart!', True, 'white'), (210, 240))
+    screen.blit(font.render(f'{winner} won the game!', True, 'white'), (210, 210))
+    screen.blit(font.render(f'Press ENTER to Restart!', True, 'white'), (210, 240))
 
 # Check if en passant is an available move
 def check_ep(old_coords, new_coords):
@@ -412,10 +412,10 @@ def draw_castling(moves):
         pygame.draw.circle(screen, color, (moves[i][0][0] * 100 + 50, moves[i][0][1] * 100 + 70), 8)
         # These circles will stand out a bit more thanks to the extra radius. Normally the circles we use have a radius of 5, while these ...
         # ... have a radius of 8. 
-        screen.blit(font.render('king', True, 'black', (moves[i][0][0] * 100 + 30, moves[i][0][1] * 100 + 70)))
+        screen.blit(font.render('king', True, 'black'), (moves[i][0][0] * 100 + 30, moves[i][0][1] * 100 + 70))
 
         pygame.draw.circle(screen, color, (moves[i][1][0] * 100 + 50, moves[i][1][1] * 100 + 70), 8)
-        screen.blit(font.render('rook', True, 'black', (moves[i][1][0] * 100 + 30, moves[i][1][1] * 100 + 70)))
+        screen.blit(font.render('rook', True, 'black'), (moves[i][1][0] * 100 + 30, moves[i][1][1] * 100 + 70))
         pygame.draw.line(screen, color, (moves[i][0][0] * 100 + 50, moves[i][0][1] * 100 + 70),
                          (moves[i][1][0] * 100 + 50, moves[i][1][1] * 100 + 70), 2)
 
@@ -551,17 +551,26 @@ while run:
                     turn_step = 2
                     selection = 100
                     valid_moves = []
+
                 elif selection != 100 and selected_piece == 'king':
+                # As the king will never be on the 'valid_moves' list we need to put an 'elif' statement to the 'if' statement concerning ...
+                # ... the valid moves. 
                     for q in range(len(castling_moves)):
                         if click_coords == castling_moves[q][0]:
                             white_locations[selection] = click_coords
                             white_moved[selection] = True
                             if click_coords == (1, 0):
+                            # One nice thing about the kings is that they're "facing" each other from across the board, so if we select ...
+                            # ... the position at (1,0) that means we are refering to the "short castle", so the rook we want is the one at ...
+                            # ... the firstmost left corner. 
                                 rook_coords = (0, 0)
                             else:
+                            # If not, then we're refering to the one at the rightmost corner. 
                                 rook_coords = (7, 0)
                             rook_index = white_locations.index(rook_coords)
                             white_locations[rook_index] = castling_moves[q][1]
+                            # As this is a new way of ending a turn, we want to use the black and white options, the 'turn_step' and ...
+                            # ... 'selection' variables as well as restarting our 'valid_moves' list. 
                             black_options = check_options(black_pieces, black_locations, 'black')
                             white_options = check_options(white_pieces, white_locations, 'white')
                             turn_step = 2
@@ -603,19 +612,25 @@ while run:
                 elif selection != 100 and selected_piece == 'king':
                     for q in range(len(castling_moves)):
                         if click_coords == castling_moves[q][0]:
-                            white_locations[selection] = click_coords
-                            white_moved[selection] = True
-                            if click_coords == (1, 0):
-                                rook_coords = (0, 0)
+                            black_locations[selection] = click_coords
+                            black_moved[selection] = True
+                            # Why we are putting just one selection (which is the king) on 'black_moved' as true? Because while we might ...
+                            # ... also explicitly say that our rook has moved as well, once you have castled, there is no opportunity to ...
+                            # ... castle anymore as the king has moved, so while the rooks haven't been explicitly tagged as "moved" we ...
+                            # ... don't need to do so anyways. 
+                            if click_coords == (1, 7):
+                                rook_coords = (0, 7)
                             else:
-                                rook_coords = (7, 0)
-                            rook_index = white_locations.index(rook_coords)
-                            white_locations[rook_index] = castling_moves[q][1]
+                                rook_coords = (7, 7)
+                                # We just change the columns of all the rooks from 0 to seven, as to indicate we're in "black's territory".
+                            rook_index = black_locations.index(rook_coords)
+                            black_locations[rook_index] = castling_moves[q][1]
                             black_options = check_options(black_pieces, black_locations, 'black')
                             white_options = check_options(white_pieces, white_locations, 'white')
-                            turn_step = 2
+                            turn_step = 0
                             selection = 100
                             valid_moves = []
+                            
         if event.type == pygame.KEYDOWN and game_over:
             if event.key == pygame.K_RETURN:
                 game_over = False
