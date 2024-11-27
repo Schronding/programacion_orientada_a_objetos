@@ -531,6 +531,7 @@ while run:
                 if click_coords in valid_moves and selection != 100:
                     white_ep = check_ep(white_locations[selection], click_coords)
                     white_locations[selection] = click_coords
+                    white_moved[selection] = True
                     if click_coords in black_locations:
                         black_piece = black_locations.index(click_coords)
                         captured_pieces_white.append(black_pieces[black_piece])
@@ -587,6 +588,7 @@ while run:
                 if click_coords in valid_moves and selection != 100:
                     black_ep = check_ep(black_locations[selection], click_coords)
                     black_locations[selection] = click_coords
+                    black_moved[selection] = True
                     if click_coords in white_locations:
                         white_piece = white_locations.index(click_coords)
                         captured_pieces_black.append(white_pieces[white_piece])
